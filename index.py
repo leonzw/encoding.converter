@@ -1,4 +1,4 @@
-#!/Volumes/data/projects/python/encoding.converter/venv/bin/python3
+#!/env/bin/python3
 # -*- coding: UTF-8 -*-
 
 import urllib.request as request
@@ -19,20 +19,23 @@ def convert():
     # rawdata = request.urlopen('https://www.bing.com/').read()
 
     args = help.init_parser()
+    if not args.verbose:
+        coloredlogs.install(level=logging.INFO)
     # logger.info("命令行参数为:{args}".format(args=args))
 
-    # file_path = '/Volumes/data/projects/python/test/test2.txt'
+    # file_path = '/test/test2.txt'
     file_path = args.source_file
     fr = open(file_path, "rb")
     raw_data = fr.read()
     res = chardet.detect(raw_data)
     logger.info('探测结果是:{res}'.format(res=res))
-    write_data = raw_data.decode(res['encoding'], errors='ignore').encode(encoding=args.target_code, errors='ignore')
-    fw = open(file_path, "wb")
-    fw.write(write_data)
-    logger.info("写入完成")
+    if not args.test_only:
+        write_data = raw_data.decode(res['encoding'], errors='ignore').encode(encoding=args.target_code, errors='ignore')
+        fw = open(file_path, "wb")
+        fw.write(write_data)
+        logger.info("写入完成")
+        fw.close()
     fr.close()
-    fw.close()
 
 
     # {'encoding': 'ascii', 'confidence': 1.0, 'language': ''}
